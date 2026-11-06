@@ -194,7 +194,7 @@ protocol/contract.json（唯一真源：15 帧 + 6 主题 + 5 命令 + 5 报警�
 - **代码生成**：一键生成 C 与 Qt 头文件，网关的 `mqtt.h` 已改为从生成头派生主题，
   不再硬编码主题字符串；
 - **副本校验**：`validate_copies.py` 比对 6 个副本的 SHA256，谁单独改了协议立刻报路径；
-- **主机侧自测**：`tools/test_contract.py` 共 **3548 条断言**，覆盖帧布局、大端编解码、
+- **主机侧自测**：`tools/test_contract.py` 共 **3557 条断言**，覆盖帧布局、大端编解码、
   seq 丢帧全回绕、急停 256 种取值兜底、MQTT 通配符匹配、命令载荷解析与越界拒绝，
   **无硬件、无第三方依赖、1 秒内跑完**，已接入 GitHub Actions。
 
@@ -291,7 +291,7 @@ cmake --build C:/build/desktop -j 8
 ```bash
 python tools/gen_contract.py --check   # 生成物是否与真源同步
 python tools/validate_copies.py        # 6 个副本是否逐字节一致
-python tools/test_contract.py          # 3548 条主机侧协议自测
+python tools/test_contract.py          # 3557 条主机侧协议自测
 ```
 
 一条命令跑全套：
@@ -308,7 +308,7 @@ python tools/gen_contract.py --check && python tools/validate_copies.py && pytho
 
 1. 校验生成物与 `contract.json` 同步（防止"改了真源忘了重新生成"）；
 2. 校验四端协议副本一致（防止"只改自己那一份"）；
-3. 跑完整主机侧协议自测（3548 条断言）。
+3. 跑完整主机侧协议自测（3557 条断言）。
 
 联调时最贵的"到底哪端写错了"问题，在提交阶段就会被拦下。
 

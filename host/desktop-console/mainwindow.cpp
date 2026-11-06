@@ -718,14 +718,14 @@ QString flagsText(int flags)
     return parts.join(QLatin1Char('|'));
 }
 
-/* 报警码名称来自 contract.json 的 alarm_codes（生成头未导出，纯显示用） */
+/* 报警码名称来自契约（protocol/contract.json → contract_qt.h），不再手抄一份 */
 QString alarmCodeName(int code)
 {
     switch (code) {
-    case 1:  return QStringLiteral("SENSOR_FAULT");
-    case 2:  return QStringLiteral("COMM_LOST");
-    case 3:  return QStringLiteral("THRESH_OVER");
-    case 4:  return QStringLiteral("ACTUATOR_FAULT");
+    case contract::kAlarmSensorFault:   return QString::fromLatin1(contract::kAlarmSensorFaultName);
+    case contract::kAlarmCommLost:      return QString::fromLatin1(contract::kAlarmCommLostName);
+    case contract::kAlarmThreshOver:    return QString::fromLatin1(contract::kAlarmThreshOverName);
+    case contract::kAlarmActuatorFault: return QString::fromLatin1(contract::kAlarmActuatorFaultName);
     default: return QStringLiteral("UNKNOWN");
     }
 }
@@ -1003,6 +1003,25 @@ void MainWindow::enterRealMode()
     m_pendingCommandMs = -1;
     m_onlineHistoryA.clear();
     m_onlineHistoryB.clear();
+
+    /* 清掉上一轮真实模式留下的数值，避免"切过去先看到旧数据" */
+    m_nodeACur = CollectNodeTelemetry();
+    m_nodeBCur = ControlNodeTelemetry();
+    m_gwStatusCur = GatewayStatusData();
+    m_gwStatsCur = GatewayStatsData();
+    setValueLabel(m_gwIrLabel, QStringLiteral("--"));
+    setValueLabel(m_gwLdrLabel, QStringLiteral("--"));
+    setValueLabel(m_gwSeqLabel, QStringLiteral("--"));
+    setValueLabel(m_gwMotorLabel, QStringLiteral("--"));
+    setValueLabel(m_gwModeLabel, QStringLiteral("--"));
+    setValueLabel(m_gwFlagsLabel, QStringLiteral("--"));
+    setValueLabel(m_gwWifiLabel, QStringLiteral("--"));
+    setValueLabel(m_gwMqttLabel, QStringLiteral("--"));
+    setValueLabel(m_gwCacheLabel, QStringLiteral("--"));
+    setValueLabel(m_gwAlertLabel, QStringLiteral("--"));
+    setValueLabel(m_gwLostRateLabel, QStringLiteral("--"));
+    setValueLabel(m_gwPubStatsLabel, QStringLiteral("--"));
+
     setLabelState(m_gwLatencyLabel, QStringLiteral("--"), "#94A3B8");
     updateOnlineRate();
     setGatewayCommandsEnabled(false);

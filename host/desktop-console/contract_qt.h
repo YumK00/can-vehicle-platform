@@ -81,6 +81,16 @@ inline constexpr unsigned kHbMagicCOLLECT    = 0xA5u;
 inline constexpr unsigned kHbMagicCONTROL    = 0x5Au;
 inline constexpr unsigned kHbMagicGATEWAY    = 0xC3u;
 
+// 报警码与名称（contract.json → alarm_codes），显示层直接用，别再手抄一份
+inline constexpr unsigned kAlarmSensorFault        = 1u;
+inline constexpr const char *kAlarmSensorFaultName = "SENSOR_FAULT";
+inline constexpr unsigned kAlarmCommLost           = 2u;
+inline constexpr const char *kAlarmCommLostName = "COMM_LOST";
+inline constexpr unsigned kAlarmThreshOver         = 3u;
+inline constexpr const char *kAlarmThreshOverName = "THRESH_OVER";
+inline constexpr unsigned kAlarmActuatorFault      = 4u;
+inline constexpr const char *kAlarmActuatorFaultName = "ACTUATOR_FAULT";
+
 // 品牌/工位信息
 inline constexpr const char *kPlatform = "can-vehicle-platform";
 } // namespace contract

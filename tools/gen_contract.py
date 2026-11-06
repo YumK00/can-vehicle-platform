@@ -186,6 +186,13 @@ def gen_qt_header(c):
         L.append("inline constexpr unsigned kHbMagic%-10s = %su;" % (pascal(who), magic))
     L.append("")
 
+    L.append("// 报警码与名称（contract.json → alarm_codes），显示层直接用，别再手抄一份")
+    for code, name in sorted(c["alarm_codes"].items(), key=lambda kv: int(kv[0])):
+        key = pascal(name.lower())             # "SENSOR_FAULT" -> "SensorFault"
+        L.append("inline constexpr unsigned kAlarm%-18s = %su;" % (key, code))
+        L.append('inline constexpr const char *kAlarm%sName = "%s";' % (key, name))
+    L.append("")
+
     L.append("// 品牌/工位信息")
     L.append('inline constexpr const char *kPlatform = "%s";' % c["platform"])
     L.append("} // namespace contract\n")

@@ -416,6 +416,14 @@ def run(c, verbose=False):
         s.check(('"%s"' % cmd["key"]) in gen_qt, "Qt 头含命令字面量: %s" % cmd["key"])
     for who in can["heartbeat"]["magic"]:
         s.check("kHbMagic" + who in gen_qt, "Qt 头含心跳魔数常量: %s" % who)
+    for code, name in c["alarm_codes"].items():
+        s.check(('"%s"' % name) in gen_qt, "Qt 头含报警码名称: %s" % name)
+        key = "".join(p[:1].upper() + p[1:] for p in name.lower().split("_"))
+        s.check(("kAlarm" + key) in gen_qt, "Qt 头含报警码常量: %s" % key)
+    s.check(not re.search(r'case\s+1:\s*return QStringLiteral\("SENSOR_FAULT"\)', 
+                          (ROOT / "host" / "desktop-console" / "mainwindow.cpp").read_text(encoding="utf-8", errors="ignore"))
+            if (ROOT / "host" / "desktop-console" / "mainwindow.cpp").exists() else True,
+            "桌面端报警码名不再手写硬编码")
 
     # 15. protocol.h 一致性
     s.section("protocol-h-consistency")
