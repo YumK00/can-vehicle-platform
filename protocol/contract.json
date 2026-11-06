@@ -1,0 +1,225 @@
+{
+  "contract_version": "1.0.0",
+  "protocol_version": "3.0",
+  "platform": "can-vehicle-platform",
+  "description": "CAN 应用层协议 + MQTT 主题契约的单一真源。改这里，然后跑 tools/gen_contract.py 重新生成各端头文件。",
+
+  "can": {
+    "standard": "CAN 2.0A",
+    "id_bits": 11,
+    "bitrate_kbps": 250,
+    "sample_point": 0.875,
+    "byte_order": "big-endian",
+    "nodes": {
+      "BROADCAST": 0,
+      "COLLECT": 1,
+      "CONTROL": 2,
+      "GATEWAY": 3
+    },
+    "groups": {
+      "ESTOP": 0,
+      "ALARM": 16,
+      "PERIODIC": 256,
+      "CTRL_MOTOR": 768,
+      "CTRL_TARGET": 784,
+      "CTRL_PID": 800,
+      "CTRL_MODE": 816,
+      "HEARTBEAT": 1792
+    },
+    "heartbeat": {
+      "period_ms": 1000,
+      "timeout_ms": 3000,
+      "magic": {
+        "COLLECT": "0xA5",
+        "CONTROL": "0x5A",
+        "GATEWAY": "0xC3"
+      }
+    },
+    "frames": [
+      {
+        "id": "0x000", "name": "ESTOP", "dlc": 1,
+        "from": "ALL", "to": "BROADCAST", "group": "ESTOP",
+        "fields": [
+          {"name": "action", "offset": 0, "size": 1, "values": {"1": "ESTOP", "2": "CLEAR"}}
+        ],
+        "note": "安全帧：B0 不是 2（解除）时一律按急停执行"
+      },
+      {
+        "id": "0x011", "name": "ALARM_COLLECT", "dlc": 3,
+        "from": "COLLECT", "to": "GATEWAY", "group": "ALARM",
+        "fields": [
+          {"name": "code", "offset": 0, "size": 1},
+          {"name": "extra", "offset": 1, "size": 2}
+        ]
+      },
+      {
+        "id": "0x012", "name": "ALARM_CONTROL", "dlc": 3,
+        "from": "CONTROL", "to": "GATEWAY", "group": "ALARM",
+        "fields": [
+          {"name": "code", "offset": 0, "size": 1},
+          {"name": "extra", "offset": 1, "size": 2}
+        ]
+      },
+      {
+        "id": "0x101", "name": "COLLECT_SENSOR", "dlc": 5,
+        "from": "COLLECT", "to": "BROADCAST", "group": "PERIODIC",
+        "period_ms": 100,
+        "fields": [
+          {"name": "ir",  "offset": 0, "size": 2, "range": [0, 4095], "unit": "ADC raw"},
+          {"name": "ldr", "offset": 2, "size": 2, "range": [0, 4095], "unit": "ADC raw"},
+          {"name": "seq", "offset": 4, "size": 1, "wrap": 256}
+        ]
+      },
+      {
+        "id": "0x102", "name": "CONTROL_STATUS", "dlc": 4,
+        "from": "CONTROL", "to": "BROADCAST", "group": "PERIODIC",
+        "period_ms": 1000,
+        "fields": [
+          {"name": "motor", "offset": 0, "size": 1, "values": {"0": "IDLE", "1": "FWD", "2": "REV"}},
+          {"name": "pwm",   "offset": 1, "size": 1, "range": [0, 100]},
+          {"name": "mode",  "offset": 2, "size": 1, "values": {"0": "MANUAL", "1": "AUTO"}},
+          {"name": "flags", "offset": 3, "size": 1, "bitfield": {"0": "COMM_OK", "1": "THRESH", "2": "ALARM", "3": "ESTOP"}}
+        ]
+      },
+      {
+        "id": "0x103", "name": "GATEWAY_STATUS", "dlc": 4,
+        "from": "GATEWAY", "to": "BROADCAST", "group": "PERIODIC",
+        "period_ms": 1000,
+        "fields": [
+          {"name": "wifi",  "offset": 0, "size": 1},
+          {"name": "mqtt",  "offset": 1, "size": 1},
+          {"name": "cache", "offset": 2, "size": 2, "range": [0, 65535]}
+        ]
+      },
+      {
+        "id": "0x301", "name": "CTRL_MOTOR_COLLECT", "dlc": 3,
+        "from": "GATEWAY", "to": "COLLECT", "group": "CTRL_MOTOR",
+        "fields": [
+          {"name": "cmd", "offset": 0, "size": 1, "values": {"0": "STOP", "1": "FWD", "2": "REV", "3": "SETSPEED"}},
+          {"name": "arg", "offset": 1, "size": 1, "range": [0, 100]},
+          {"name": "cid", "offset": 2, "size": 1}
+        ]
+      },
+      {
+        "id": "0x302", "name": "CTRL_MOTOR_CONTROL", "dlc": 3,
+        "from": "GATEWAY", "to": "CONTROL", "group": "CTRL_MOTOR",
+        "fields": [
+          {"name": "cmd", "offset": 0, "size": 1, "values": {"0": "STOP", "1": "FWD", "2": "REV", "3": "SETSPEED"}},
+          {"name": "arg", "offset": 1, "size": 1, "range": [0, 100]},
+          {"name": "cid", "offset": 2, "size": 1}
+        ]
+      },
+      {
+        "id": "0x311", "name": "CTRL_TARGET_COLLECT", "dlc": 3,
+        "from": "GATEWAY", "to": "COLLECT", "group": "CTRL_TARGET",
+        "fields": [
+          {"name": "target", "offset": 0, "size": 2},
+          {"name": "cid",    "offset": 2, "size": 1}
+        ]
+      },
+      {
+        "id": "0x312", "name": "CTRL_TARGET_CONTROL", "dlc": 3,
+        "from": "GATEWAY", "to": "CONTROL", "group": "CTRL_TARGET",
+        "fields": [
+          {"name": "target", "offset": 0, "size": 2},
+          {"name": "cid",    "offset": 2, "size": 1}
+        ]
+      },
+      {
+        "id": "0x322", "name": "CTRL_PID_CONTROL", "dlc": 7,
+        "from": "GATEWAY", "to": "CONTROL", "group": "CTRL_PID",
+        "fields": [
+          {"name": "kp",  "offset": 0, "size": 2, "scale": 100},
+          {"name": "ki",  "offset": 2, "size": 2, "scale": 100},
+          {"name": "kd",  "offset": 4, "size": 2, "scale": 100},
+          {"name": "cid", "offset": 6, "size": 1}
+        ]
+      },
+      {
+        "id": "0x332", "name": "CTRL_MODE_CONTROL", "dlc": 2,
+        "from": "GATEWAY", "to": "CONTROL", "group": "CTRL_MODE",
+        "fields": [
+          {"name": "mode", "offset": 0, "size": 1, "values": {"0": "MANUAL", "1": "AUTO"}},
+          {"name": "cid",  "offset": 1, "size": 1}
+        ]
+      },
+      {
+        "id": "0x701", "name": "COLLECT_HEARTBEAT", "dlc": 2,
+        "from": "COLLECT", "to": "BROADCAST", "group": "HEARTBEAT",
+        "fields": [
+          {"name": "magic", "offset": 0, "size": 1},
+          {"name": "cnt",   "offset": 1, "size": 1}
+        ]
+      },
+      {
+        "id": "0x702", "name": "CONTROL_HEARTBEAT", "dlc": 2,
+        "from": "CONTROL", "to": "BROADCAST", "group": "HEARTBEAT",
+        "fields": [
+          {"name": "magic", "offset": 0, "size": 1},
+          {"name": "cnt",   "offset": 1, "size": 1}
+        ]
+      },
+      {
+        "id": "0x703", "name": "GATEWAY_HEARTBEAT", "dlc": 2,
+        "from": "GATEWAY", "to": "BROADCAST", "group": "HEARTBEAT",
+        "fields": [
+          {"name": "magic", "offset": 0, "size": 1},
+          {"name": "cnt",   "offset": 1, "size": 1}
+        ]
+      }
+    ]
+  },
+
+  "mqtt": {
+    "broker": {"host": "broker.emqx.io", "port": 1883, "tls": false, "username": "", "password": ""},
+    "prefix": "gw0805",
+    "client_ids": {
+      "gateway": "esp32s3_<mac-last-3-bytes>",
+      "desktop": "qt_desktop_console",
+      "mobile": "qt_mobile_app"
+    },
+    "publish": [
+      {"key": "telemetry_collect", "topic": "{prefix}/nodeA/telemetry", "qos": 0, "retain": false,
+       "payload": {"ir": "uint16", "ldr": "uint16", "seq": "uint8"},
+       "source": "CAN 0x101"},
+      {"key": "telemetry_control", "topic": "{prefix}/nodeB/telemetry", "qos": 0, "retain": false,
+       "payload": {"motor": "uint8", "pwm": "uint8", "mode": "uint8", "flags": "uint8"},
+       "source": "CAN 0x102"},
+      {"key": "alert_collect", "topic": "{prefix}/nodeA/alert", "qos": 1, "retain": false,
+       "payload": {"code": "uint8", "extra": "uint16"},
+       "source": "CAN 0x011"},
+      {"key": "alert_control", "topic": "{prefix}/nodeB/alert", "qos": 1, "retain": false,
+       "payload": {"code": "uint8", "extra": "uint16"},
+       "source": "CAN 0x012"},
+      {"key": "gateway_status", "topic": "{prefix}/gateway/status", "qos": 0, "retain": false,
+       "payload": {"wifi": "uint8", "mqtt": "uint8", "cache": "uint16"},
+       "source": "CAN 0x103 / 网况", "period_ms": 5000},
+      {"key": "gateway_stats", "topic": "{prefix}/gateway/stats", "qos": 0, "retain": false,
+       "payload": {"a_rx": "uint32", "a_lost": "uint32", "pub_total": "uint32", "pub_lost": "uint32"},
+       "source": "can_get_stats()", "period_ms": 5000}
+    ],
+    "subscribe": [
+      {"key": "command", "topic": "{prefix}/+/cmd/#", "qos": 1,
+       "note": "+ = 节点（nodeA/nodeB/all），# = 命令类型"}
+    ],
+    "commands": [
+      {"key": "estop",  "topic": "{prefix}/{node}/cmd/estop",  "can_frame": "0x000", "payload": {"format": "uint8", "desc": "1=急停 2=解除；默认急停"}, "qos": 1, "retain": false},
+      {"key": "motor",  "topic": "{prefix}/{node}/cmd/motor",  "can_frame": "0x301|0x302", "payload": {"format": "cmd[,arg]", "desc": "cmd: 0停 1正转 2反转 3设速"}, "qos": 1, "retain": false},
+      {"key": "target", "topic": "{prefix}/{node}/cmd/target", "can_frame": "0x311|0x312", "payload": {"format": "uint16", "desc": "目标值 0~65535"}, "qos": 1, "retain": false},
+      {"key": "pid",    "topic": "{prefix}/{node}/cmd/pid",    "can_frame": "0x322", "payload": {"format": "kp,ki,kd", "desc": "浮点，内部 ×100"}, "qos": 1, "retain": false},
+      {"key": "mode",   "topic": "{prefix}/{node}/cmd/mode",   "can_frame": "0x332", "payload": {"format": "uint8", "desc": "0手动 1自动"}, "qos": 1, "retain": false}
+    ],
+    "nodes": {
+      "nodeA": "COLLECT",
+      "nodeB": "CONTROL",
+      "all": "BROADCAST"
+    }
+  },
+
+  "alarm_codes": {
+    "1": "SENSOR_FAULT",
+    "2": "COMM_LOST",
+    "3": "THRESH_OVER",
+    "4": "ACTUATOR_FAULT"
+  }
+}

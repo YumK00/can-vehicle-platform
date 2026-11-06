@@ -1,0 +1,45 @@
+# 构建产物与本地配置（一律不入库）
+
+# ---- 构建目录 ----
+build/
+_build/
+**/build/
+cmake-build-*/
+CMakeCache.txt
+CMakeFiles/
+compile_commands.json
+*.o
+*.obj
+*.a
+*.elf
+*.bin
+*.hex
+*.map
+*.d
+
+# ---- IDE / 本机配置 ----
+*.user
+.vscode/ipch/
+.vscode/.browse*
+.settings/
+
+# ---- Python ----
+__pycache__/
+*.pyc
+*.pyo
+
+# ---- ESP-IDF ----
+sdkconfig.old
+managed_components/
+dependencies.lock.bak
+
+# ---- Qt / 运行时产物 ----
+car_state_log/
+*.log
+*.pdb
+*.ilk
+
+# ---- 系统 ----
+Thumbs.db
+.DS_Store
+desktop.ini

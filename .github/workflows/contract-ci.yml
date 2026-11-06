@@ -1,0 +1,47 @@
+name: contract-ci
+
+# 契约治理流水线：每次提交都回答三个问题
+#   1) 是不是改了 contract.json 却忘了重新生成头文件？
+#   2) 是不是只改了某一个工程里的协议副本？
+#   3) 协议行为（帧布局/丢帧/急停兜底/主题匹配/命令解析）有没有被改坏？
+# 这三类问题在联调阶段排查成本极高，放在 CI 里几乎为零。
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    name: 契约校验 + 主机侧协议自测
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 生成物是否与单一真源同步
+        run: python tools/gen_contract.py --check
+
+      - name: 四端协议副本是否逐字节一致
+        run: python tools/validate_copies.py
+
+      - name: 主机侧协议自测（3500+ 断言，无需硬件）
+        run: python tools/test_contract.py
+
+      - name: 摘要
+        if: always()
+        run: |
+          echo "### 契约治理检查" >> $GITHUB_STEP_SUMMARY
+          echo "- 真源：protocol/contract.json" >> $GITHUB_STEP_SUMMARY
+          echo "- 生成物：protocol/generated/*.h / *.md" >> $GITHUB_STEP_SUMMARY
+          echo "- 副本：网关、采集节点、执行节点、桌面端、手机端共 6 份" >> $GITHUB_STEP_SUMMARY
+          echo "- 自测：python tools/test_contract.py" >> $GITHUB_STEP_SUMMARY

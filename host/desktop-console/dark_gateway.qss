@@ -1,0 +1,312 @@
+/* ========== 全局基础 ========== */
+QMainWindow, QWidget {
+    background-color: #0F1726;
+    color: #E2E8F0;
+}
+
+/* ========== 分组卡片 ========== */
+QGroupBox {
+    background-color: #172238;
+    border-radius: 10px;
+    border: 1px solid #23324E;
+    margin-top: 14px;
+    padding: 14px 12px 12px 12px;
+}
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 14px;
+    top: 2px;
+    color: #A0B4D8;
+}
+
+/* ========== 内部数据卡片 ========== */
+QFrame#frame_13,
+QFrame#frame_3,
+QFrame#frame_4,
+QFrame#frame_8 {
+    background-color: #0F1726;   /* 与主背景一致 */
+    border-radius: 8px;
+    border: 1px solid #2A3B5C;    /* 保留边框以示区分 */
+    padding: 10px;
+}
+
+/* ========== 按钮 ========== */
+QPushButton {
+    background-color: #23324E;
+    color: #E2E8F0;
+    border-radius: 6px;
+    border: 1px solid #334669;
+    padding: 8px 16px;
+}
+QPushButton:hover { background-color: #2D4063; }
+QPushButton:pressed { background-color: #1E2D48; }
+QPushButton:disabled {
+    background-color: #1A2438;
+    color: #55688A;
+    border: 1px solid #23324E;
+}
+QPushButton#btn_qidongcan {
+    background-color: #10B981;
+    color: #081C18;
+    border: none;
+}
+QPushButton#btn_qidongcan:hover { background-color: #34D399; }
+QPushButton#btn_qidongcan:pressed { background-color: #059669; }
+
+QPushButton#btn_mqttlianjie {
+    background-color: #6366F1;
+    color: #FFFFFF;
+    border: none;
+}
+QPushButton#btn_mqttlianjie:hover { background-color: #818CF8; }
+QPushButton#btn_mqttlianjie:pressed { background-color: #4F46E5; }
+
+QPushButton#btn_guzhangmoni {
+    background-color: #B91C1C;
+    color: #FFFFFF;
+    border: none;
+}
+QPushButton#btn_guzhangmoni:hover { background-color: #DC2626; }
+QPushButton#btn_guzhangmoni:pressed { background-color: #991B1B; }
+
+/* 网关命令面板：急停按钮常红，禁用时压暗（真实网关未连接时不允许下发） */
+QPushButton#btn_gateway_estop {
+    background-color: #B91C1C;
+    color: #FFFFFF;
+    border: none;
+}
+QPushButton#btn_gateway_estop:hover { background-color: #DC2626; }
+QPushButton#btn_gateway_estop:pressed { background-color: #991B1B; }
+QPushButton#btn_gateway_estop:disabled {
+    background-color: #3B1B22;
+    color: #8A5A62;
+}
+
+/* ========== 单选框 ========== */
+QRadioButton {
+    color: #CBD5E1;
+    spacing: 8px;
+}
+QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+    border-radius: 8px;
+    border: 2px solid #334669;
+    background-color: #1C2A44;
+}
+QRadioButton::indicator:checked {
+    border-color: #6366F1;
+    background-color: #6366F1;
+}
+QRadioButton::indicator:checked:hover { background-color: #818CF8; }
+QRadioButton::indicator:hover { border-color: #4F46E5; }
+
+/* ========== 组合框 ========== */
+QComboBox {
+    background-color: #1C2A44;
+    border: 1px solid #2A3B5C;
+    border-radius: 6px;
+    padding: 6px 12px;
+    color: #E2E8F0;
+}
+QComboBox::drop-down { width: 24px; border: none; }
+QComboBox::down-arrow {
+    image: none;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #94A3B8;
+}
+QComboBox QAbstractItemView {
+    background-color: #172238;
+    border: 1px solid #2A3B5C;
+    selection-background-color: #2D4063;
+    color: #E2E8F0;
+}
+
+/* ========== 输入框 ========== */
+QLineEdit {
+    background-color: #1C2A44;
+    border: 1px solid #2A3B5C;
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: #E2E8F0;
+}
+QLineEdit:read-only {
+    background-color: #141E30;
+    color: #7185A5;
+}
+
+/* ========== 日期/时间编辑框 ========== */
+QDateTimeEdit, QTimeEdit {
+    background: transparent;
+    border: none;
+    color: #E2E8F0;
+}
+QDateTimeEdit::up-button, QDateTimeEdit::down-button,
+QTimeEdit::up-button, QTimeEdit::down-button {
+    width: 0;
+    height: 0;
+}
+QProgressBar {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #1A0505,   /* 极暗红 */
+                                stop:0.5 #3D2600, /* 极暗橙黄 */
+                                stop:1 #00261E); /* 极暗绿 */
+    border-radius: 4px;
+    height: 8px;
+    text-align: center;
+    border: none;
+}
+QProgressBar::chunk {
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                                stop:0 #EF4444,   /* 亮红 */
+                                stop:0.5 #FBBF24, /* 亮黄 */
+                                stop:1 #10B981); /* 亮绿 */
+    border-radius: 4px;
+}
+
+/* ========== 日志列表 ========== */
+QListWidget {
+    background-color: #141E30;
+    border-radius: 8px;
+    border: 1px solid #23324E;
+    padding: 0px;
+    color: #CBD5E1;
+    outline: none;
+}
+QListWidget::item {
+    padding: 1px 6px;
+    border-bottom: 1px solid #1C2A44;
+}
+QListWidget::item:selected {
+    background-color: #273858;
+    color: #FFFFFF;
+}
+QListWidget::item:hover:!selected {
+    background-color: #1F2D48;
+}
+
+/* ========== 滚动条 ========== */
+QScrollBar:vertical {
+    background-color: #141E30;
+    width: 8px;
+    margin: 0px;
+}
+QScrollBar::handle:vertical {
+    background-color: #334669;
+    border-radius: 4px;
+    min-height: 20px;
+}
+QScrollBar::handle:vertical:hover { background-color: #475B82; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }
+
+QScrollBar:horizontal {
+    background-color: #141E30;
+    height: 8px;
+    margin: 0px;
+}
+QScrollBar::handle:horizontal {
+    background-color: #334669;
+    border-radius: 4px;
+    min-width: 20px;
+}
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal { width: 0px; }
+
+/* ========== 状态标签 ========== */
+QLabel#tagState {
+    background-color: #273249;
+    border-radius: 12px;
+    padding: 3px 12px;
+    color: #A0B4D8;
+}
+QLabel#label_mqttlianjiezhuangtai {
+    color: #EF4444;
+    background-color: transparent;
+}
+QLabel#label_yunxingzhuangtai {
+    color: #EF4444;
+    background-color: transparent;
+}
+QLabel#label_mqttzaixian {
+    color: #EF4444;
+    background-color: transparent;
+}
+
+QLabel#label_guzhanghuodong {
+    color: #10B981;
+    background-color: transparent;
+}
+
+/* ========== 全局标签颜色统一管理 ========== */
+QLabel#label_62 { color: #94A3B8; }
+QLabel#label { color: #22A8C2; }
+QLabel#label_2 { color: #F8FAFC; }
+QLabel#label_14,
+QLabel#label_12,
+QLabel#label_46,
+QLabel#label_48,
+QLabel#label_52,
+QLabel#label_54,
+QLabel#label_56,
+QLabel#label_ { color: #94A3B8; }
+QLabel#label_11,
+QLabel#label_21,
+QLabel#label_24,
+QLabel#label_27 { color: #A0B4D8; }
+QLabel#label_dianchi,
+QLabel#labe_chesu,
+QLabel#label_dianjiwendu,
+QLabel#label_mqttfabuxiaoxi,
+QLabel#label_mqttdingyuezhuti,
+QLabel#label_mqttxintiaoyanchi { color: #F8FAFC; }
+QLabel#label_4 { color: #94A3B8; }
+
+/* ========== 真实网关：状态看板 / 命令下发 Tab ========== */
+QTabWidget#gatewayTabs::pane {
+    border: 1px solid #23324E;
+    border-radius: 8px;
+    background-color: #172238;
+    top: -1px;
+}
+QTabWidget#gatewayTabs QTabBar::tab {
+    background-color: #172238;
+    color: #94A3B8;
+    border: 1px solid #23324E;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    padding: 6px 16px;
+    margin-right: 2px;
+}
+QTabWidget#gatewayTabs QTabBar::tab:selected {
+    background-color: #23324E;
+    color: #E2E8F0;
+}
+QTabWidget#gatewayTabs QTabBar::tab:hover:!selected {
+    background-color: #1F2D48;
+}
+QWidget#gatewayPanel,
+QWidget#commandPanel {
+    background-color: transparent;
+}
+
+/* ========== 分隔线 ========== */
+QLine {
+    color: #23324E;
+    background-color: #23324E;
+    max-height: 1px;
+}
+
+/* ========== 特殊分组 ========== */
+QGroupBox#groupBox_6 {
+    background-color: #0F1726;
+}
+QRadioButton#radionbtn_fangzhengmoshi,
+QRadioButton#radiobtn_zhenshicheliang {
+    background-color: #0F1726;
+}
+QLabel {
+    background-color: transparent;
+}
+
